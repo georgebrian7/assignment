@@ -1,72 +1,20 @@
-const fs = require('fs');
+const express = require('express')
+
+const app = express();
 
 
-const http =require('http');
-const server = http.createServer((req, res)=>{
-     res.setHeader('Content-Type','text/html');
+app.set('view engine', 'ejs');
+app.listen(3000);
 
-
-    let path ='./';
-    switch(req.url){
-        case'/home':
-            path += 'home.html';
-            res.statusCode =200;
-            break;
-        case'/about':
-            path += 'about.html';
-            res.statusCode =200;
-            break;
-        default:
-            path += '404.html';
-            res.statusCode =400;
-            break;
-        
-    }
-
-
-
-     fs.readFile(path,(err,data)=>{
-        if(err){
-            console.log('errorrrrr');
-            res.end(); 
-        }else{
-            res.write(data);
-            res.end();
-        }
-     })
-    
+app.get('/', (req,res)=>{
+    res.sendFile('./home.html', { root:__dirname});
+    // res.send('<p>lastpole</p>');
 });
+app.get('/about', (req,res)=>{
+    res.send('<p>pole</p>');
+})
 
-server.on('connection', (socket)=>{
-    console.log('new connection');
+app.use((req,res)=>{
+    res.status(404).sendFile('./404.html', { root:__dirname});
+    // res.send('<p>lastpole</p>');
 });
-server.listen(3000, 'localhost' ,()=>{
-    console.log('listening on port 3000')
-});
-
-// console.log('Listening on port 3000')
-// fs.readFile('./joke.txt',(err, data) =>{
-//     if(err) {
-//         console.log(err);
-//     }
-//     console.log(data.toString());
-    
-// });
-// fs.writeFile('./joke.txt', 'LOL' ,(data) =>{
-//     console.log(data)
-// // })
-// if(!fs.existsSync('./assets')){
-// fs.mkdir('./assets' , (err) =>{
-// if(err){
-//     console.log(err);
-// }
-// console.log('folder created')
-// });
-// } else{
-//     fs.rmdir('./assets',(err) =>{
-//         if(err){
-//             console.log(err)
-//         }
-//         console.log('folder deleted');
-//     })
-// }
