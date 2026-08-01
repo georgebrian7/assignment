@@ -7,14 +7,25 @@ app.set('view engine', 'ejs');
 app.listen(3000);
 
 app.get('/', (req,res)=>{
-    res.sendFile('./home.html', { root:__dirname});
+    const blogs =[
+        { title: 'AVATAR'},
+        { title: 'Iron Man'},
+        { title: 'Kit'}
+    ]
+    res.render('home',{blogs})
+    
+    // res.sendFile('./home.html', { root:__dirname});
+
     // res.send('<p>lastpole</p>');
 });
 app.get('/about', (req,res)=>{
-    res.send('<p>pole</p>');
+    res.render('about', { title: 'tell me about'});
+})
+app.get('/about/create', (req,res)=>{
+    res.render('create');
 })
 
 app.use((req,res)=>{
-    res.status(404).sendFile('./404.html', { root:__dirname});
-    // res.send('<p>lastpole</p>');
+    res.status(404).render('404', { root:__dirname});
+   
 });
