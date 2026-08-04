@@ -14,45 +14,13 @@ app.set('view engine', 'ejs');
 
 
 app.use(express.static('public'));
+app.use(express.urlencoded({extended:true}));
 app.use(morgan('dev'));
 
 
-app.get('/add-blog', (req,res)=>{
-    const blog =new Blog({
-        title:'narnia 2',
-        snippet:'good place',
-        body:'a long time in narnia'
-    });
-    blog.save()
-        .then((result)=>{
-            res.send(result)
-        })
-        .catch((err)=>{
-            console.log(err);
-        });
-});
-app.get('/all-blogs', (req,res)=>{
-    Blog.find()
-        .then((result)=>{
-            res.send(result)
-        })
-        .catch((err)=>{
-            console.log(err);
-        });
-});
-
-
 app.get('/', (req,res)=>{
-    const blogs =[
-        { title: 'AVATAR'},
-        { title: 'Iron Man'},
-        { title: 'Kit'}
-    ]
-    res.render('home',{blogs})
-    
-    // res.sendFile('./home.html', { root:__dirname});
+    res.redirect('/blogs');
 
-    // res.send('<p>lastpole</p>');
 });
 app.get('/about', (req,res)=>{
     res.render('about', { title: 'tell me about'});
@@ -60,6 +28,50 @@ app.get('/about', (req,res)=>{
 app.get('/about/create', (req,res)=>{
     res.render('create');
 })
+app.post('/blogs',(req,res)=>{
+const blog =new Blog(req.body)
+    blog.save()
+        .then((result)=>{
+            res.redirect('/blogs');
+        })
+        .catch((err)=>{
+            console.log(err);
+        });
+});
+app.get('/blogs', (req,res)=>{
+    Blog.find()
+        .then((result)=>{
+            res.render('home',{blogs:result})
+        })
+        .catch((err)=>{
+            console.log(err);
+        });
+});
+
+app.get('/blogs/:id', (req,res)=>{
+    const id =req.params.id;
+    Blog.findById(id)
+        .then((result)=>{
+            res.render('details',{blog:result})
+        })
+        .catch((err)=>{
+            console.log(err);
+        });
+});
+
+app.delete('/blogs/:id',(req,res) =>{
+    const id =req.params.id;
+    Blog.findByIdAndDelete(id)
+        .then((result)=>{
+            res.json({redirect:'/blogs'});
+        })
+        .catch((err)=>{
+            console.log(err);
+        });
+
+})
+
+
 
 app.use((req,res)=>{
     res.status(404).render('404', { root:__dirname});
